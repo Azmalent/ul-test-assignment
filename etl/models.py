@@ -23,15 +23,6 @@ class Window(BaseModel):
         return self
 
 
-class DqReason(BaseModel):
-    """Причина попадания сделки в карантин из справочника dq.dq_quarantine_reasons."""
-
-    model_config = ConfigDict(frozen=True)
-
-    id: int
-    description: str
-
-
 class LoadResult(BaseModel):
     """Результат загрузки staging в core и карантин."""
 

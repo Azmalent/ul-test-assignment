@@ -2,9 +2,9 @@ import pendulum
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 
-from etl.core import init_core_schema
 from etl.dq import init_dq_schema
 from etl.load import load_validation_results
+from etl.schemas import init_core_schema
 from etl.staging import extract_and_stage_window
 
 default_args = {
@@ -12,7 +12,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id="run_etl_pipeline",  # type: ignore
+    dag_id="run_etl_pipeline",
     schedule=None,
     default_args=default_args,
     catchup=False,

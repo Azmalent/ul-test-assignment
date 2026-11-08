@@ -8,10 +8,9 @@ from datetime import date
 
 from dotenv import load_dotenv
 
-from etl.core import init_core_schema
 from etl.db import create_db_engine
-from etl.dq import init_dq_schema
 from etl.load import load_validation_results
+from etl.schemas import init_core_schema, init_dq_schema
 from etl.staging import extract_and_stage_window
 
 logger = logging.getLogger(__name__)
