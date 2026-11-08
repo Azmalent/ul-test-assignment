@@ -13,11 +13,14 @@ x-airflow-common:
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
     AIRFLOW__WEBSERVER__EXPOSE_CONFIG: 'true'
     AIRFLOW_CONN_DEALS_BIGDATA: 'postgresql://postgres:postgres@postgres:5432/deals_bigdata'
+    PYTHONPATH: '/opt/airflow:/opt/airflow/dags:/opt/airflow/plugins'
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
     - ./plugins:/opt/airflow/plugins
     - ./config:/opt/airflow/config
+    - ./etl:/opt/airflow/etl
+    - ./sql:/opt/airflow/sql
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
