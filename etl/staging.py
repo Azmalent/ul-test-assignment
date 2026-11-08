@@ -1,4 +1,4 @@
-"""Стейджинг результата DQ-валидации сделок."""
+"""Стейджинг результата валидации сделок."""
 
 from __future__ import annotations
 
@@ -27,7 +27,7 @@ def _to_date(value: date | datetime | str) -> date:
     return date.fromisoformat(str(value))
 
 
-def stage_price_validation(
+def extract_and_stage_window(
     start_date: date | datetime | str,
     end_date: date | datetime | str,
     engine: Engine | None = None,
@@ -55,10 +55,7 @@ def stage_price_validation(
             text(f"CREATE UNLOGGED TABLE {STAGING_TABLE} AS {query}"),
             {"start_date": window.start_date, "end_date": window.end_date},
         )
-        conn.exec_driver_sql(
-            f"CREATE UNIQUE INDEX {STAGING_TABLE.replace('.', '_')}_id_idx "
-            f"ON {STAGING_TABLE} (id)"
-        )
+        conn.exec_driver_sql(f"CREATE UNIQUE INDEX {STAGING_TABLE.replace('.', '_')}_id_idx ON {STAGING_TABLE} (id)")
         conn.exec_driver_sql(f"ANALYZE {STAGING_TABLE}")
 
     return STAGING_TABLE

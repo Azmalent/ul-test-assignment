@@ -12,7 +12,6 @@ x-airflow-common:
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
     AIRFLOW__WEBSERVER__EXPOSE_CONFIG: 'true'
-    AIRFLOW_CONN_DEALS_BIGDATA: 'postgresql://postgres:postgres@postgres:5432/deals_bigdata'
     PYTHONPATH: '/opt/airflow:/opt/airflow/dags:/opt/airflow/plugins'
   volumes:
     - ./dags:/opt/airflow/dags

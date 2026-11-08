@@ -5,30 +5,7 @@ from airflow.operators.python import PythonOperator
 from etl.core import init_core_schema
 from etl.dq import init_dq_schema
 from etl.load import load_validation_results
-from etl.staging import stage_price_validation
-
-
-def ensure_dq_schema() -> None:
-    """Идемпотентно создаёт схему dq, причины и таблицу карантина."""
-    init_dq_schema()
-
-
-def ensure_core_schema() -> None:
-    """Идемпотентно создаёт core.prices и ML-вьюху."""
-    init_core_schema()
-
-
-def extract_and_stage_window(from_date: pendulum.Date, to_date: pendulum.Date):
-    """
-    Извлекает окно дат и помещает результат DQ-валидации в staging-таблицу.
-    """
-    stage_price_validation(from_date, to_date)
-
-
-def load_validation_task() -> None:
-    """Переносит staging в core.prices и карантин."""
-    load_validation_results()
-
+from etl.staging import extract_and_stage_window
 
 default_args = {
     "owner": "Дмитрий Съестов",
@@ -43,15 +20,15 @@ with DAG(
     tags=["VRP"],
     max_active_runs=1,
 ) as dag:
-    t_ensure_dq_schema = PythonOperator(
-        task_id="ensure_dq_schema",
-        python_callable=ensure_dq_schema,
+    t_init_dq_schema = PythonOperator(
+        task_id="init_dq_schema",
+        python_callable=init_dq_schema,
         dag=dag,
     )
 
-    t_ensure_core_schema = PythonOperator(
-        task_id="ensure_core_schema",
-        python_callable=ensure_core_schema,
+    t_init_core_schema = PythonOperator(
+        task_id="init_core_schema",
+        python_callable=init_core_schema,
         dag=dag,
     )
 
@@ -63,10 +40,10 @@ with DAG(
 
     t_load_validation_results = PythonOperator(
         task_id="load_validation_results",
-        python_callable=load_validation_task,
+        python_callable=load_validation_results,
         dag=dag,
     )
 
     (  # type: ignore # noqa: B018
-        t_ensure_dq_schema >> t_ensure_core_schema >> t_extract_and_stage_window >> t_load_validation_results
+        t_init_dq_schema >> t_init_core_schema >> t_extract_and_stage_window >> t_load_validation_results
     )

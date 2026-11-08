@@ -1,4 +1,4 @@
-"""Pydantic-модели для валидации конфигов и результатов ETL."""
+"""Pydantic-модели для валидации данных."""
 
 from __future__ import annotations
 
@@ -24,7 +24,7 @@ class Window(BaseModel):
 
 
 class DqReason(BaseModel):
-    """Причина отсева из справочника dq.dq_quarantine_reasons."""
+    """Причина попадания сделки в карантин из справочника dq.dq_quarantine_reasons."""
 
     model_config = ConfigDict(frozen=True)
 

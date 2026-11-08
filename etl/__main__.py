@@ -12,7 +12,7 @@ from etl.core import init_core_schema
 from etl.db import create_db_engine
 from etl.dq import init_dq_schema
 from etl.load import load_validation_results
-from etl.staging import stage_price_validation
+from etl.staging import extract_and_stage_window
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +66,7 @@ def main() -> None:
         init_core_schema(create_db_engine())
         logger.info("Схема core инициализирована")
     elif args.command == "stage-validation":
-        table = stage_price_validation(args.start_date, args.end_date)
+        table = extract_and_stage_window(args.start_date, args.end_date)
         logger.info("Результат валидации сохранён в %s", table)
     elif args.command == "load-validation":
         result = load_validation_results(create_db_engine())
