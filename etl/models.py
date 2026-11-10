@@ -1,7 +1,5 @@
 """Pydantic-модели для валидации данных."""
 
-from __future__ import annotations
-
 from datetime import date
 from uuid import UUID
 
@@ -9,7 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class Window(BaseModel):
-    """Окно обработки по loading_date, обе границы включительно."""
+    """Окно обработки по loading_date: [start_date, end_date)."""
 
     model_config = ConfigDict(frozen=True)
 
@@ -18,8 +16,8 @@ class Window(BaseModel):
 
     @model_validator(mode="after")
     def validate_order(self) -> "Window":
-        if self.start_date > self.end_date:
-            raise ValueError("start_date не может быть больше end_date")
+        if self.start_date >= self.end_date:
+            raise ValueError("start_date должен быть меньше end_date")
         return self
 
 

@@ -11,7 +11,7 @@ x-airflow-common:
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
-    AIRFLOW__WEBSERVER__EXPOSE_CONFIG: 'true'
+    DATABASE_URL: 'postgresql+psycopg2://postgres:postgres@postgres:5432/deals_bigdata'
     PYTHONPATH: '/opt/airflow:/opt/airflow/dags:/opt/airflow/plugins'
   volumes:
     - ./dags:/opt/airflow/dags
@@ -116,21 +116,6 @@ services:
       test:
         - "CMD-SHELL"
         - 'celery --app airflow.providers.celery.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}" || celery --app airflow.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}"'
-      interval: 10s
-      timeout: 10s
-      retries: 5
-    restart: always
-    depends_on:
-      <<: *airflow-common-depends-on
-      airflow-init:
-        condition: service_completed_successfully
-
-  airflow-triggerer:
-    <<: *airflow-common
-    container_name: ul_airflow_triggerer
-    command: triggerer
-    healthcheck:
-      test: ["CMD-SHELL", 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"']
       interval: 10s
       timeout: 10s
       retries: 5

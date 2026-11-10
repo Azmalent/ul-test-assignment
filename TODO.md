@@ -1,5 +1,0 @@
-# TODO
-
-- [ ] Airflow
-  - [ ] Backfill
-  - [ ] Расписание

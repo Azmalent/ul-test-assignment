@@ -2,9 +2,8 @@ import pendulum
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 
-from etl.dq import init_dq_schema
 from etl.load import load_validation_results
-from etl.schemas import init_core_schema
+from etl.schemas import init_core_schema, init_dq_schema
 from etl.staging import extract_and_stage_window
 
 default_args = {
@@ -13,11 +12,11 @@ default_args = {
 
 with DAG(
     dag_id="run_etl_pipeline",
-    schedule=None,
+    schedule="0 7 * * *",  # 07:00 daily # type: ignore
     default_args=default_args,
     catchup=False,
-    start_date=pendulum.datetime(2026, 11, 8, tzinfo=pendulum.timezone("Europe/Moscow")),  # type: ignore
-    tags=["VRP"],
+    start_date=pendulum.datetime(2026, 11, 8, tz=pendulum.timezone("Europe/Moscow")),  # type: ignore
+    tags=["ETL"],
     max_active_runs=1,
 ) as dag:
     t_init_dq_schema = PythonOperator(
