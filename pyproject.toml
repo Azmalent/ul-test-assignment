@@ -31,6 +31,12 @@ ml = "ml.__main__:main"
 [tool.setuptools.packages.find]
 include = ["etl*", "ml*"]
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "integration: requires TEST_DATABASE_URL and source data",
+]
+
 [tool.pyright]
 reportMissingImports = "none"
 reportAttributeAccessIssue = "none"
