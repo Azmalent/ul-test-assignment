@@ -52,12 +52,12 @@ def extract_and_stage_window(
             conn.execute(
                 text(
                     f"""
-                SELECT
-                    count(*) AS total,
-                    count(*) FILTER (WHERE cardinality(dq_reason_ids) = 0) AS valid,
-                    count(*) FILTER (WHERE cardinality(dq_reason_ids) > 0) AS invalid
-                FROM {STAGING_TABLE}
-                """
+                    SELECT
+                        count(*) AS total,
+                        count(*) FILTER (WHERE cardinality(dq_reason_ids) = 0) AS valid,
+                        count(*) FILTER (WHERE cardinality(dq_reason_ids) > 0) AS invalid
+                    FROM {STAGING_TABLE}
+                    """
                 )
             )
             .mappings()

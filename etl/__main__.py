@@ -14,7 +14,7 @@ from etl.db import create_db_engine
 from etl.load import load_validation_results
 from etl.mart import refresh_mart_route_card
 from etl.models import LoadResult, Window
-from etl.schemas import init_core_schema, init_dq_schema, init_mart_schema
+from etl.schemas import init_core_schema, init_dq_schema, init_mart_schema, init_ml_schema
 from etl.staging import STAGING_TABLE, extract_and_stage_window
 
 logger = logging.getLogger(__name__)
@@ -51,7 +51,7 @@ def _run_pipeline(
     engine: Engine | None = None,
 ) -> LoadResult:
     """Выполняет полный ETL пайплайн за окно [start_date, end_date)."""
-    window = Window(start_date=start_date, end_date=end_date)
+    window = Window(start_date=start_date, end_date=end_date)  # type: ignore
     engine = engine or create_db_engine()
     as_of = get_as_of_date()
     run_id = uuid4()
@@ -68,6 +68,7 @@ def _run_pipeline(
     init_dq_schema(engine)
     init_core_schema(engine)
     init_mart_schema(engine)
+    init_ml_schema(engine)
     extract_and_stage_window(window.start_date, window.end_date, engine)
     result = load_validation_results(engine, run_id=run_id)
     mart_rows = refresh_mart_route_card(engine, as_of=as_of)

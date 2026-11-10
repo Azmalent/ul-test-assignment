@@ -43,7 +43,8 @@ def load_validation_results(
     *,
     run_id: UUID | str,
 ) -> LoadResult:
-    """Переносит валидные сделки из staging в core.prices,
+    """
+    Переносит валидные сделки из staging в core.prices,
     а невалидные - в dq.dq_quarantine_prices.
     """
     engine = engine or create_db_engine()
@@ -104,7 +105,7 @@ def load_validation_results(
 
     logger.info(
         "Загрузка завершена: run_id=%s, удалено из core=%s, "
-        "удалено из карантина=%s, valid=%s, quarantine=%s, %.2f c",
+        + "удалено из карантина=%s, valid=%s, quarantine=%s, %.2f c",
         run_id,
         core_deleted,
         quarantine_deleted,
