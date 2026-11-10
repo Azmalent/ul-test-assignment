@@ -1,7 +1,16 @@
 # Тестовое задание: Middle Data Engineer
 
-## Установка зависимостей
+## Запуск приложения
 
 ```bash
-pip install -r requirements.txt 
+docker-compose up
+```
+
+## Использование в CLI-режиме
+
+```bash
+# Установка зависимостей
+pip install -r requirements.txt
+
+python -m etl --start-date START_DATE --end-date END_DATE
 ```

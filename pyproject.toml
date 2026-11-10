@@ -12,6 +12,10 @@ dependencies = [
     "psycopg2-binary>=2.9,<3",
     "python-dotenv>=1.0,<2",
     "pydantic>=2.7,<3",
+    "numpy>=1.26,<3",
+    "pandas>=2.1,<4",
+    "scikit-learn>=1.4,<2",
+    "catboost>=1.2,<2",
 ]
 
 [project.optional-dependencies]
@@ -22,9 +26,10 @@ dev = [
 
 [project.scripts]
 etl = "etl.__main__:main"
+ml = "ml.__main__:main"
 
 [tool.setuptools.packages.find]
-include = ["etl*"]
+include = ["etl*", "ml*"]
 
 [tool.pyright]
 reportMissingImports = "none"

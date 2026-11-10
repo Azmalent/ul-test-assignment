@@ -1,0 +1,52 @@
+{
+  "model_name": "catboost_v1",
+  "metrics": {
+    "r2": 0.9145756030733341,
+    "mape_pct": 16.37941468152622,
+    "rmse_rub": 55913.809870196266,
+    "mae_rub": 28922.184698980596
+  },
+  "baseline_metrics": {
+    "r2": 0.8401357132047166,
+    "mape_pct": 49.50141954635582,
+    "rmse_rub": 76489.85750187014,
+    "mae_rub": 48408.82326288342
+  },
+  "train_rows": 24226,
+  "test_rows": 12808,
+  "train_start": "2026-07-26",
+  "test_start": "2026-10-05",
+  "test_end": "2026-10-26",
+  "features": [
+    "distance",
+    "total_weight",
+    "total_volume",
+    "origin_lat",
+    "origin_lon",
+    "destination_lat",
+    "destination_lon",
+    "loading_year",
+    "loading_month",
+    "loading_dow",
+    "loading_doy",
+    "month_sin",
+    "month_cos",
+    "dow_sin",
+    "dow_cos",
+    "doy_sin",
+    "doy_cos",
+    "origin_region",
+    "destination_region",
+    "body_group",
+    "weight_category",
+    "volume_category"
+  ],
+  "categorical_features": [
+    "origin_region",
+    "destination_region",
+    "body_group",
+    "weight_category",
+    "volume_category"
+  ],
+  "random_seed": 42
+}

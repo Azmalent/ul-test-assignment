@@ -1,6 +1,8 @@
 x-airflow-common:
   &airflow-common
-  image: apache/airflow:2.10.5
+  build:
+    context: ./docker/airflow
+  image: ul-airflow:2.10.5
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
@@ -21,6 +23,7 @@ x-airflow-common:
     - ./config:/opt/airflow/config
     - ./etl:/opt/airflow/etl
     - ./sql:/opt/airflow/sql
+    - ./ml:/opt/airflow/ml
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
