@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS dq.dq_quarantine_prices (
     price_id bigint NOT NULL,
     reason_id smallint NOT NULL REFERENCES dq.dq_quarantine_reasons (id),
     detected_at timestamptz NOT NULL DEFAULT now(),
-    etl_run_id uuid,
+    etl_run_id text,
     loading_date date,
     currency_code varchar(3),
     price double precision,

@@ -1,8 +1,6 @@
 -- Сборка витрины mart.mart_route_card.
-
--- Таблица каждый раз очищается и пересоздаётся заново, т.к. мы считаем динамику
--- и backfill инвалидирует более свежие данные
-TRUNCATE TABLE mart.mart_route_card;
+-- Очистка таблицы выполняется в refresh_mart_route_card.
+-- as_of передаётся параметром :as_of.
 
 -- Дедупликация городов по gc_id
 WITH cities_dedup AS MATERIALIZED (
@@ -71,7 +69,7 @@ price_months AS MATERIALIZED (
     FROM
         price_dates pd
     WHERE
-        pd.price_date <= '2026-10-26'
+        pd.price_date <= :as_of
     GROUP BY
         pd.price_id,
         date_trunc('month', pd.price_date)::date

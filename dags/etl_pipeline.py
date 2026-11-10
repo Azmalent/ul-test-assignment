@@ -2,9 +2,29 @@ import pendulum
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 
+from etl.config import get_as_of_date
 from etl.load import load_validation_results
-from etl.schemas import init_core_schema, init_dq_schema
+from etl.mart import refresh_mart_route_card
+from etl.schemas import init_core_schema, init_dq_schema, init_mart_schema
 from etl.staging import extract_and_stage_window
+
+
+def extract_window_task(**context) -> None:
+    """Берёт окно из интервала Airflow и запускает staging."""
+    start_date = context["data_interval_start"].date()
+    end_date = context["data_interval_end"].date()
+    extract_and_stage_window(start_date, end_date)
+
+
+def load_validation_task(**context) -> None:
+    """Передаёт Airflow run_id в загрузку core/карантина."""
+    load_validation_results(run_id=context["run_id"])
+
+
+def refresh_mart_task() -> None:
+    """Пересобирает витрину mart.mart_route_card."""
+    refresh_mart_route_card(as_of=get_as_of_date())
+
 
 default_args = {
     "owner": "Дмитрий Съестов",
@@ -31,18 +51,35 @@ with DAG(
         dag=dag,
     )
 
+    t_init_mart_schema = PythonOperator(
+        task_id="init_mart_schema",
+        python_callable=init_mart_schema,
+        dag=dag,
+    )
+
     t_extract_and_stage_window = PythonOperator(
         task_id="extract_and_stage_window",
-        python_callable=extract_and_stage_window,
+        python_callable=extract_window_task,
         dag=dag,
     )
 
     t_load_validation_results = PythonOperator(
         task_id="load_validation_results",
-        python_callable=load_validation_results,
+        python_callable=load_validation_task,
+        dag=dag,
+    )
+
+    t_refresh_mart_route_card = PythonOperator(
+        task_id="refresh_mart_route_card",
+        python_callable=refresh_mart_task,
         dag=dag,
     )
 
     (  # type: ignore # noqa: B018
-        t_init_dq_schema >> t_init_core_schema >> t_extract_and_stage_window >> t_load_validation_results
+        t_init_dq_schema
+        >> t_init_core_schema
+        >> t_init_mart_schema
+        >> t_extract_and_stage_window
+        >> t_load_validation_results
+        >> t_refresh_mart_route_card
     )

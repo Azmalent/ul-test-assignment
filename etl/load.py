@@ -3,7 +3,7 @@
 import logging
 import time
 from pathlib import Path
-from uuid import uuid4
+from uuid import UUID
 
 from sqlalchemy import text
 from sqlalchemy.engine import Engine
@@ -38,10 +38,16 @@ def _ensure_objects(conn, staging_table: str = STAGING_TABLE) -> None:
             raise RuntimeError(f"Нет таблицы {table_name}. {hint}")
 
 
-def load_validation_results(engine: Engine | None = None) -> LoadResult:
-    """Переносит валидные сделки из stg.price_validation в core.prices, а невалидные - в dq.dq_quarantine_prices."""
+def load_validation_results(
+    engine: Engine | None = None,
+    *,
+    run_id: UUID | str,
+) -> LoadResult:
+    """Переносит валидные сделки из staging в core.prices,
+    а невалидные - в dq.dq_quarantine_prices.
+    """
     engine = engine or create_db_engine()
-    run_id = uuid4()
+    run_id = str(run_id)
 
     core_sql = LOAD_CORE_SQL.read_text(encoding="utf-8")
     quarantine_sql = LOAD_QUARANTINE_SQL.read_text(encoding="utf-8")
@@ -97,7 +103,8 @@ def load_validation_results(engine: Engine | None = None) -> LoadResult:
         ).rowcount
 
     logger.info(
-        "Загрузка завершена: run_id=%s, удалено из core=%s, удалено из карантина=%s, valid=%s, quarantine=%s, %.2f c",
+        "Загрузка завершена: run_id=%s, удалено из core=%s, "
+        "удалено из карантина=%s, valid=%s, quarantine=%s, %.2f c",
         run_id,
         core_deleted,
         quarantine_deleted,

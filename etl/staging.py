@@ -2,9 +2,9 @@
 
 import logging
 import time
-from datetime import date, datetime
 from pathlib import Path
 
+import pendulum
 from sqlalchemy import text
 from sqlalchemy.engine import Engine
 
@@ -20,24 +20,15 @@ STAGING_TABLE = f"{STAGING_SCHEMA}.price_validation"
 logger = logging.getLogger(__name__)
 
 
-def _to_date(value: date | datetime | str) -> date:
-    """Нормализует дату из date/datetime/ISO-строки."""
-    if isinstance(value, datetime):
-        return value.date()
-    if isinstance(value, date):
-        return value
-    return date.fromisoformat(str(value))
-
-
 def extract_and_stage_window(
-    start_date: date | datetime | str,
-    end_date: date | datetime | str,
+    start_date: pendulum.Date | pendulum.DateTime | str,
+    end_date: pendulum.Date | pendulum.DateTime | str,
     engine: Engine | None = None,
 ) -> None:
     """Сохраняет результат DQ-валидации в stg.price_validation."""
     window = Window(
-        start_date=_to_date(start_date),
-        end_date=_to_date(end_date),
+        start_date=start_date,  # type: ignore
+        end_date=end_date,  # type: ignore
     )
 
     query = PRICE_VALIDATION_SQL.read_text(encoding="utf-8")

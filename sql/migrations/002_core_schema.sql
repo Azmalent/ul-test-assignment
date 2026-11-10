@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS core.prices (
     end_loading_date date,
     source varchar(255),
     meta_item_id bigint,
-    etl_run_id uuid NOT NULL,
+    etl_run_id text NOT NULL,
     loaded_at timestamptz NOT NULL DEFAULT now()
 );
 
@@ -38,29 +38,3 @@ CREATE INDEX IF NOT EXISTS core_prices_route_idx ON core.prices (loading_city_gc
 CREATE INDEX IF NOT EXISTS core_prices_fact_outlier_idx ON core.prices (is_fact, outlier_mark);
 
 CREATE INDEX IF NOT EXISTS core_prices_currency_idx ON core.prices (currency_code);
-
--- Представление для ML.
--- as_of = 2026-10-26 — дата снимка задания.
-CREATE
-OR REPLACE VIEW core.ml_training_rows AS
-SELECT
-    price_id,
-    loading_date,
-    loading_city_gcid,
-    unloading_city_gcid,
-    distance,
-    total_weight,
-    total_volume,
-    body_type,
-    price_rub,
-    weight_category,
-    volume_category
-FROM
-    core.prices
-WHERE
-    is_fact
-    AND NOT complex
-    AND NOT outlier_mark
-    AND loading_date <= DATE '2026-10-26';
-
-COMMENT ON VIEW core.ml_training_rows IS 'Исторические факты для обучения ML: is_fact, без complex и outlier_mark, loading_date <= as_of.';
