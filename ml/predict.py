@@ -9,6 +9,7 @@ import pandas as pd
 import pendulum
 from catboost import CatBoostRegressor
 from psycopg2.extras import execute_values
+from sqlalchemy import text
 from sqlalchemy.engine import Engine
 
 from etl.config import get_as_of_date
@@ -108,13 +109,15 @@ def save_predictions(
     )
 
     with engine.begin() as conn:
-        raw = conn.connection
-        with raw.cursor() as cursor:
-            cursor.execute(
-                "DELETE FROM mart.ml_price_predictions WHERE model_name = %s",
-                (model_name,),
-            )
-            if rows:
+        conn.execute(
+            text("DELETE FROM mart.ml_price_predictions WHERE model_name = :model_name"),
+            {"model_name": model_name},
+        )
+        if rows:
+            # execute_values собирает один multi-row INSERT, поэтому ему нужен
+            # сырой psycopg2-курсор. Курсор берём с того же соединения и в той же
+            # транзакции, что и DELETE, поэтому вставка коммитится вместе с ней.
+            with conn.connection.cursor() as cursor:
                 execute_values(cursor, insert_sql, rows, page_size=10000)
 
     logger.info(
