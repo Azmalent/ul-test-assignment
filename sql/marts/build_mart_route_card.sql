@@ -190,7 +190,7 @@ with_reliability_level AS (
             WHEN (
                 w.trips_count >= 30
                 AND w.carriers_count >= 5
-                AND ('2026-10-26' - (w.month + INTERVAL '1 month - 1 day')::date) <= 30 
+                AND (:as_of - (w.month + INTERVAL '1 month - 1 day')::date) <= 30 
             ) THEN 'HIGH'
             WHEN w.trips_count >= 10 THEN 'MEDIUM'
             ELSE 'LOW_DATA'
