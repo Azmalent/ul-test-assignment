@@ -55,7 +55,7 @@ price_groups AS MATERIALIZED (
     SELECT price_id, body_group
     FROM price_body_groups
     
-    UNION
+    UNION ALL
 
     SELECT price_id, body_group
     FROM price_body_fallback
