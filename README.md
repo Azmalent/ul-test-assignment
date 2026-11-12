@@ -382,12 +382,6 @@ init_dq_schema
 `TriggerDagRunOperator` не ждёт завершения ML DAG. Если нужно, чтобы ETL
 ждал ML, установи `wait_for_completion=True`.
 
-После первого появления DAG его нужно снять с паузы:
-
-```bash
-docker exec ul_airflow_scheduler airflow dags unpause ml_pipeline
-```
-
 ## Тесты
 
 ```bash
@@ -511,7 +505,5 @@ ORDER BY rows DESC;
 - `reliability_level = HIGH` считается по концу месяца.
 - Для future-скоринга используется `require_fact = false`, чтобы оценивать
   плановые заявки независимо от `is_fact`.
-- ML DAG создаётся paused из-за `DAGS_ARE_PAUSED_AT_CREATION=true`.
 - Airflow worker использует кастомный образ с CatBoost; без пересборки
   `docker compose up --build` ML DAG не запустится.
-- Superset и ClickHouse не реализованы: это бонусные задачи.
